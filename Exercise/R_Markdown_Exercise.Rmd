@@ -1,0 +1,68 @@
+---
+title: "My Example Document"
+author: "Brandon Kopp"
+date: "7/13/2019"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Fisher's Iris Data
+#### by Brandon Kopp
+
+The famous **Fisher iris data set** gives the measurements in centimeters of the variables sepal length and width and petal length and width, respectively, for 50 flowers from each of 3 species of iris. The species are Iris *setosa*, *versicolor*, and *virginica*.
+
+`iris` is a data frame with `r nrow(iris)` cases (rows) and `r ncol(iris)` variables (columns) named: 
+
+1. Sepal.Length
+2. Sepal.Width
+3. Petal.Length
+4. Petal.Width
+5. Species
+
+For more information about this data set, see [Fisher's Iris Data Set on Wikipedia](https://en.wikipedia.org/wiki/Iris_flower_data_set).
+
+### Load Libraries
+
+Load the `dplyr` and `ggplot2` packages for later use.
+
+```{r warning=FALSE, message=FALSE}
+library(dplyr)
+library(ggplot2)
+```
+
+### Data Transformation
+
+Calculate new variables that represent the area of the Sepals and Petals (Length X Width).
+
+```{r}
+iris_df <- iris %>%
+  mutate(sepal_area = Sepal.Length * Sepal.Width,
+         petal_area = Petal.Length * Petal.Width)
+```
+
+
+### Data Table
+
+Display the data using a table.
+
+```{r}
+knitr::kable(head(iris_df))
+```
+
+### Plot
+
+Create a scatterplot of the Sepal Area and Petal Area variables calculated above.
+
+```{r fig.align='center', fig.width=6, fig.height=4, dpi=150}
+ggplot(iris_df, aes(sepal_area, petal_area)) +
+  geom_point(aes(color=Species), alpha=0.6, size=3) +
+  labs(x="Sepal Area (in sq cm)", y="Petal Area (in sq cm)") +
+  theme_bw()
+```
+

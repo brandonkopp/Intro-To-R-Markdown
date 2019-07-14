@@ -1,0 +1,183 @@
+---
+title: ""
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(shiny)
+
+```
+
+<div>
+<p style="display:inline-block"><img src="./img/BLS_emblem.png" style="height:50px"></p>
+<div style="display:inline-block; margin-left:20px;vertical-align:bottom">
+<h1>Occupational Employment Statistics</h1>
+</div>
+</div>
+<hr>
+
+<center>
+```{r, warning=F, message=F,echo=FALSE}
+wellPanel(style="width:65%; text-align:left",
+  selectInput("soctitle", "Select Occupation", 
+            choices = paste(occ_desc$OCC_CODE, occ_desc$OCC_TITLE, sep=" | "), 
+            selected = "19-3011 | Economists")
+)
+
+
+SOC_CODE <- reactive(strsplit(input$soctitle," | ")[[1]][1])
+```
+</center>
+
+###  Occupation Profile: `r renderText(oes$OCC_TITLE[oes$OCC_CODE == SOC_CODE()][1])`
+
+`r renderText(occ_desc$OCC_DESC[occ_desc$OCC_CODE == SOC_CODE()])`
+
+<br> 
+
+#### Jobs per 1000 Jobs
+
+The number of jobs (employment) in the given occupation per 1,000 jobs in the given area.
+
+
+```{r jobs1000, echo=FALSE, message=F, warning=F, fig.width=9, fig.height=4.5}
+
+
+occ_state1 <- reactive({
+  state_occ <- oes[oes$OCC_CODE == SOC_CODE() & oes$JOBS_1000 != "**", ] %>%
+    select(STATE, JOBS_1000) %>%
+    left_join(data.frame(STATE = state.name), .) %>%
+    mutate(state = tolower(STATE))
+  state_occ$JOBS_1000 <- as.numeric(state_occ$JOBS_1000)
+
+  state_occ
+})
+
+renderPlot({
+    map1 <- ggplot(occ_state1(), aes(map_id = state)) + 
+      # map points to the fifty_states shape data
+      geom_map(aes(fill = JOBS_1000), map = fifty_states) +
+      geom_map(color="black", fill="transparent",size=0.1, map=fifty_states) +
+      expand_limits(x = fifty_states$long, y = fifty_states$lat) +
+      coord_map() +
+      scale_x_continuous(breaks = NULL) + 
+      scale_y_continuous(breaks = NULL) +
+      scale_fill_continuous(high = "lightsteelblue4", low = "lightsteelblue1",
+                            na.value = "grey90") +
+      labs(x = "", y = "", fill="",
+           caption = "Darker Color = Higher Jobs/1000; Grey = NA") +
+      theme(legend.position = "right", 
+            panel.background = element_blank(),
+            legend.text=element_text(size=11),
+            legend.key.size = unit(0.8, "cm"),
+            legend.margin=margin(0,0,0,0),
+            legend.box.margin=margin(-10,0,-10,-10),
+            plot.margin = margin(0,0,0,0)) 
+
+    top5 <- occ_state1() %>%
+      top_n(5, JOBS_1000) %>%
+      arrange(desc(JOBS_1000))
+  top5$STATE <- factor(top5$STATE, rev(top5$STATE), ordered=TRUE)
+  
+  top5_states <- ggplot(top5, aes(STATE, JOBS_1000)) +
+    geom_bar(stat="identity", width=0.85, fill= "lightsteelblue3") +
+    geom_text(aes(label=round(JOBS_1000, 2)),size=4, hjust=1.1,fontface="bold") +
+    labs(x= "", y="",
+         title = "Top 5 States") +
+    theme_bw() +
+    theme(legend.position = "none",
+          axis.text = element_text(size=11),
+          panel.grid = element_blank(),
+          panel.border = element_blank(),
+          axis.line.y = element_line(size=0.25),
+          axis.text.x = element_blank(),
+          axis.ticks.x = element_blank(),
+          plot.title = element_text(size=13, face="bold"),
+          plot.margin = margin(0,0,40,0)) +
+    coord_flip() 
+  
+  gridExtra::grid.arrange(map1, top5_states, nrow=1, widths=2:1)
+})
+
+
+```
+
+<br>
+
+#### Median Salary
+
+```{r asalary, echo=FALSE, message=F, warning=F, fig.width=9, fig.height=4.5}
+occ_state2 <- reactive({
+  state_occ2 <- oes[oes$OCC_CODE == SOC_CODE() & oes$A_MEDIAN != "**", ] %>%
+    select(STATE, A_MEDIAN) %>%
+    left_join(data.frame(STATE = state.name), .) %>%
+    mutate(state = tolower(STATE))
+
+  state_occ2$A_MEDIAN <- as.integer(state_occ2$A_MEDIAN)
+
+  state_occ2
+})
+
+renderPlot({
+  map2 <- ggplot(occ_state2(), aes(map_id = state)) + 
+    # map points to the fifty_states shape data
+    geom_map(aes(fill = A_MEDIAN), map = fifty_states) +
+    geom_map(color="black", fill="transparent",size=0.1, map=fifty_states) +
+    expand_limits(x = fifty_states$long, y = fifty_states$lat) +
+    coord_map() +
+    scale_x_continuous(breaks = NULL) + 
+    scale_y_continuous(breaks = NULL) +
+    scale_fill_continuous(high = "olivedrab4", low = "olivedrab2",
+                          na.value = "grey90",
+                          labels = scales::dollar) +
+    labs(x = "", y = "", fill="",
+         caption = "Darker Color = Higher Median Salary; Grey = NA") +
+    theme(legend.position = "right", 
+          panel.background = element_blank(),
+          legend.text=element_text(size=11),
+          legend.key.size = unit(0.8, "cm"),
+          legend.margin=margin(0,0,0,0),
+          legend.box.margin=margin(-10,0,-10,-10),
+          plot.margin = margin(0,5,0,0)) 
+
+  top5 <- occ_state2() %>%
+    top_n(5, A_MEDIAN) %>%
+    arrange(desc(A_MEDIAN))
+  top5$STATE <- factor(top5$STATE, rev(top5$STATE), ordered=TRUE)
+  
+  top5_states <- ggplot(top5, aes(STATE, A_MEDIAN)) +
+    geom_bar(stat="identity", width=0.85, fill= "olivedrab3") +
+    geom_text(aes(label=scales::dollar(A_MEDIAN)),size=4, hjust=1.1,fontface="bold") +
+    labs(x= "", y="",
+         title = "Top 5 States") +
+    theme_bw() +
+    theme(legend.position = "none",
+          axis.text = element_text(size=11),
+          panel.grid = element_blank(),
+          panel.border = element_blank(),
+          axis.line.y = element_line(size=0.25),
+          axis.text.x = element_blank(),
+          axis.ticks.x = element_blank(),
+          plot.title = element_text(size=13, face="bold"),
+          plot.margin = margin(0,0,40,0)) +
+    coord_flip() 
+  
+  gridExtra::grid.arrange(top5_states, map2, nrow=1, widths=1:2)
+})
+
+
+```
+
+#### About the Data
+
+The data displayed in this document were released by the Bureau of Labor Statistics in May 2018. They can be found on the [OES Data Page](https://www.bls.gov/oes/tables.htm). Specifically, the state level estimates were downloaded on June 8th, 2019. These data contain the following fields:
+
+| Field | Description | Field | Description |
+| ----- | ------------ | ----- | ---------- |
+| ST | State Abbreviation | STATE | State Name |
+| OCC_CODE | Occupation Code | OCC_TITLE | Occupation Title |
+| TOT_EMP | Total Employment | JOBS_1000 | Jobs per 1000 jobs in a given area|
+| H_MEDIAN | Hourly Median Wage | A_MEDIAN | Annual Median Wage |

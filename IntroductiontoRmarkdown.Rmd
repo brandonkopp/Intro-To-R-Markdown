@@ -1,96 +1,120 @@
 ---
 title: "Introduction to R Markdown"
 output:
-  pdf_document: default
-  html_document: default
+  pdf_document:
+    toc: yes
+  html_document:
+    toc: yes
+    toc_float:
+      collapsed: no
+      smooth_scroll: yes
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+This document was used as part of a 3-hour tutorial on R Markdown I presented to my colleagues at work.  You can find all the materials used in the class on [Github](https://github.com/brandonkopp/Intro-To-R-Markdown) including the R Markdown version of this document.
+ 
 <br>
 
-Introduction
-========================================================
+## Outline
 
-I was asked to put together a 2-hour introduction on R Markdown for my colleagues at work. This document is a modified version of the slides that I used during that talk.  Because R Markdown is easier to work with than R Presentations, I have added a bit more material here.
+<hr style="border:.75px solid black; margin-top:0px">
 
+- [What is R Markdown](#what-is-r-markdown)
+- [Why Use R Markdown](#why-use-r-markdown)
+  - [Use Cases](#use-cases)
+- [Getting Started](#getting-started)  
+  - [Installation](#installation)  
+  - [Opening an R Markdown Document](#opening-an-r-markdown-document)  
+- [The Ingredients of an R Markdown Document](#the-ingredients-of-an-r-markdown-document)
+  - [YAML Header](#yaml-header)
+  - [Formatted Text](#formatted-text)
+  - [Code Chunks](#code-chunks)
+  - [Inline Code](#inline-code)
+- [Output](#output)
+- [Miscellaneous Information](#miscellaneous-information)
+- [Additional Resources](#additional-resources)
 
-<hr>
-Outline
-========================================================
+<br>
 
-This document is meant to provide an overview of R Markdown
+## What is R Markdown 
 
-- What is R Markdown and Why Use It
-- Getting Started
-- Orientation to R Markdown Documents
-- Formatted Text
-- Code Chunks
-- Inline Code
-- Output as...
-- Additional Resources
-
-
-<hr>
-What is R Markdown?
-========================================================
+<hr style="border:.75px solid black; margin-top:0px">
 
 R Markdown is a tool within RStudio that allows you to write documents, presentations, or webpages that **combine written text with analytical code.**
 
 - The text in the document can be fully formatted in a report style (e.g., with headers, bolded text, hyperlinks, etc.)
+- Your code runs when the document is created
 - You can choose to make your code visible or not
 - Documents can be output as PDFs, Word Documents, HTML, and other formats
+- In new versions of RStudio, you can intermix R and Python code using the `reticulate` package
 
 <img src="img/markdown.jpg" height=425; style="background-color:transparent; border:1px; box-shadow:2px; ">
 
+<br>
 
-<hr>
-Why Use R Markdown
-========================================================
+## Why Use R Markdown 
 
-To me, the strongest argument is that everything is in one place. In graduate school, I did quite a bit of work with Excel and SPSS. Not everything was coded. I would be hard-pressed to perfectly recreate every ANOVA result, every mean, every p-value.  With R Markdown, you don't get a final report unless the code runs perfectly throughout the document.
+<hr style="border:.75px solid black; margin-top:0px">
 
-- Documents with embedded code are reproducible
+The strongest argument for using R Markdown is **reproducibility**; all of your analyses and text describing those analyses are in one place. In graduate school, I did most of my work in Excel and SPSS. Some of the analyses were scripted but not everything. I would be hard-pressed to perfectly recreate every ANOVA result, every mean, every p-value.  Here's an excerpt (I bolded the calculations for emphasis):
+
+> <span style="font-size:0.9em">*Certainty*.  Participants in the low distraction condition were more certain that their attitudes toward Wi-Fi networks were correct **(M = 5.20, SD = 1.66)** than were high distraction participants **(M = 4.53, SD 1.88), F(1, 141) = 5.11, p < .05**.</span>
+
+With R Markdown, you don't get a final report unless the code runs perfectly throughout the document.
+
+A few more arguments in favor of R Markdown:
+
 - The document will serve as a record for how you arrived at the results you include in your papers
 - You can pass on your code to readers in addition to the report content
 - Dynamic documents can change as data are updated
 - Documents can also be used for future data releases and/or different subsets of data
 
+### Use Cases
 
-<hr>
-My Experience With R Markdown
-========================================================
+<hr style="border:.75px solid black; margin-top:0px">
 
-I have had about 1 year of experience with R and 9 months of experience with R Markdown.
+There are dozens of different use cases listed in the [R Markdown Definitive Guide](https://bookdown.org/yihui/rmarkdown/basics-examples.html). I highlight a few ideas below applicable to BLS:
 
-- Coursera Data Science Specialization Classes
-- CE FR Survey Report
-- Research reports
-- [RPubs reports](http://rpubs.com/brandonkopp)
+- Reproducible Reports
+- Situations Where You Have Frequently Updating Data
+- Report Templates
+  - Subsectors
+  - Time Periods
+- Customized Respondent Materials
+- Tutorials (e.g., on Rpubs - [Creating a Network Plot in R](http://rpubs.com/brandonkopp/creating-a-network-plot-in-R))
+- Documentation
+- Webpages/Websites
 
+<br> 
 
-<hr>
-Getting Started
-========================================================
+## Getting Started
+
+<hr style="border:.75px solid black; margin-top:0px">
+
+### Installation
+
+<hr style="border:.75px solid black; margin-top:0px">
 
 Before you start creating documents you'll need to do a few things first.
 
-1. Download R
-2. Download RStudio
-3. Install Packages (knitr, rmarkdown) *may not be necessary in newer versions
+1. Download and install R
+2. Download and install RStudio
+3. Install `rmarkdown` package
 
   ```{r eval=FALSE}
-  install.packages(c("knitr","rmarkdown"))
+  install.packages("rmarkdown")
   ```
   
-4. Install some distribution of the LaTeX system (e.g., MikText). This is necessary if you want to output to PDF or Word. *May not be necessary in newer versions
+4. Install some distribution of the LaTeX system (e.g., MikTex). This is necessary if you want to output to PDF or Word. 
+    - [Rstudio suggests](https://bookdown.org/yihui/rmarkdown/installation.html) the `tinytex` package as an alternative to LaTeX software like MikTex. I haven't tried it myself.
 
 
-<hr>
-Opening an R Markdown Document
-========================================================
+### Opening an R Markdown Document
+
+<hr style="border:.75px solid black; margin-top:0px">
 
 1. Open RStudio
 2. Select File > New File > R Markdown...
@@ -100,21 +124,37 @@ Opening an R Markdown Document
 
 <img src="img/OpenMarkdown.png" height=425; style="background-color:transparent; border:0px; box-shadow:none; ">
 
-<hr>
-Document Orientation
-========================================================
+<blockquote style="border-left:6px solid green;background-image: linear-gradient(to right, lightgreen , white);">
+**Hands-On:** Open a blank R Markdown document and save it to a folder on your computer.
+</blockquote>
 
-This document will cover 4 pieces of an R Markdown document.
+<hr>
+<br>
+
+## The Ingredients of an R Markdown Document
+
+<hr style="border:.75px solid black; margin-top:0px">
+
+There are four key ingredients to an R Markdown document:
+
+1. YAML Header
+2. Formatted Text
+3. Code Chunks
+4. Inline Text
 
 <img src="img/orientation.png" style="background-color:transparent; border:0px; box-shadow:none;">
 
 <hr>
-YAML
-========================================================
+<br> 
 
-- Stands for "YAML Ain't Markup Language"
+### YAML Header
+
+<hr style="border:.75px solid black; margin-top:0px">
+
+- YAML stands for "Yet Another Markup Language"
 - This is where you set options for your overall document
-- Through YAML you can set:
+- YAML can also be used to store document metadata (author, date published, etc.)
+- Through the YAML header you can set:
     + font (size and style)
     + default figure options (height, width, etc.)
     + reference custom CSS (Cascading Style Sheets) Code
@@ -123,59 +163,67 @@ YAML
 ---
 title: "My Title"
 author: "Brandon Kopp"
-date: "August 10, 2016"
+date: "July 19, 2019"
 output: html_document
-font-family: "Arial"
 css: customcss.css
 ---
 ~~~~~
 
+<blockquote style="border-left:6px solid green; background-image: linear-gradient(to right, lightgreen , white);">
+**Hands-On:** Update the title and author in the YAML Header.
+</blockquote>
+
+<br> 
+
+### Formatted Text 
+
+<hr style="border:.75px solid black; margin-top:0px">
+
+R Markdown offers shorthand for formatting text. This shorthand is called **markdown**.  It is important to note that not all markdown will be interpreted the same. What is shown below is fairly common and will display as intended in documents produced in R Markdown, but it may display differently if you load it onto Github.
+
+For any markdown syntax, there is equivalent HTML syntax. You can use either version in R Markdown documents that you intend to output to HTML. HTML syntax will not be interpreted correctly if you output to PDF.
+
+| Format | Markdown | HTML | Formatted Text |
+| ------ | -------- | ---- | -------------- |
+| italics | `*italics*` OR `_italics_` | `<i>italics</i>` | *italics* |
+| bold    | `**bold text**` OR `__bold text__` | `<b>bold text</b>`  | **bold text** |
+| strikethrough | `~~strikethrough~~` | `<strike>italics</strike>` | ~~strikethrough~~ |
+| superscript | `superscript^text^` |  `superscript<sup>text</sup>` | superscript^text^ |
+| subscript | `subscript~text~` | `subscript<sub>text</sub>`  | subscript~text~ |
+| hyperlink | `[BLS](www.bls.gov)` | `<a href="www.bls.gov">BLS</a>` | [BLS](www.bls.gov) |
+| highlight code | `'highlighted code'`<br> Note: `'` is a backtick | `<code>highlighted code</code>` | `highlighted code`| 
+
 <hr>
-Formatted Text
-========================================================
+#### Section Headings
 
-- R Markdown offers shorthand for formatting text.
+<p style="font-weight:500; font-size:34px">Header 1</p>
 
-  + `*italics*` or `_italics_` ---> *italics*
-  + `**bold**` or `__bold__` ---> **bold**
-  + `~~strikethrough~~` ---> ~~strikethrough~~
-  + `[BLS](www.bls.gov)` --->  [BLS](www.bls.gov)
-  + `superscript^2` ---> superscript^2
-  + `subscript^~2~` ---> subscript<sub>2</sub>
+**Markdown:** `# Header 1`  
+**HTML:** `<h1>Header 1</h1>`
 
-You can also use HTML
+<p style="font-weight:500; font-size:30px">Header 2</p>
 
-- `<i>italics</i>` ---> <i>italics</i>
-- `<b>bold</b>` ---> <b>bold</b>
-  
+**Markdown:** `## Header 2`  
+**HTML:** `<h2>Header 2</h2>`
+
+<p style="font-weight:500; font-size:24px">Header 3</p>
+
+**Markdown:** `### Header 3`  
+**HTML:** `<h3>Header 3</h3>`
+
+<p style="font-weight:500; font-size:18px">Header 4</p>
+
+**Markdown:** `#### Header 4`  
+**HTML:** `<h4>Header 4</h4>`
+
 <hr>
-### Section Headings
+#### Lists
 
+##### Unordered List
 
-+ `#Header 1` &nbsp;&nbsp;**--->**  
-
-# Header 1
-
-+ `##Header 2` &nbsp;&nbsp;**--->**  
-
-## Header 2 
-
-+ `###Header 3` &nbsp;&nbsp;**--->**  
-
-### Header 3 
-
-+ `####Header 4` &nbsp;&nbsp;**--->** 
-
-#### Header 4 
-  
-<hr>
-### Lists
-
-
-#### Unordered List
-
+**Markdown:**  
 `- Item `  
-  `+ Sub-item`  
+<span style="color:white">____</span> `+ Sub-item`  
 `- Item`  
 `- Item`
 
@@ -184,11 +232,12 @@ You can also use HTML
 - Item
 - Item
 
-#### Ordered List
+##### Ordered List
 
+**Markdown:**  
 `1. Item Number 1`  
 `2. Item Number 2`  
-  `+ Sub-item`  
+<span style="color:white">____</span> `+ Sub-item`  
 `3. Item Number 3`
 
 1. Item Number 1
@@ -197,7 +246,57 @@ You can also use HTML
 3. Item Number 3
 
 <hr>
-### Line Breaks
+#### Tables
+
+**Markdown:**  
+`|  Header 1  |  Header 2  |`  
+`| ---------- | ---------- |`  
+`| Row1, Col1 | Row1, Col2 |`  
+`| Row2, Col1 | Row2, Col2 |`  
+
+|  Header 1  |  Header 2  |
+| ---------- | ---------- |
+| Row1, Col1 | Row1, Col2 |
+| Row2, Col1 | Row2, Col2 |
+
+**Note:** The vertical pipes `|` don't have to line up for the table to display correctly.  
+**Note:** There are various options for cell alignment. 
+
+**Markdown:**  
+`|  Center-aligned Header 1  |  Right-aligned Header 2  |`  
+`| :--------: | ---------: |`  
+`| Center-aligned Row1, Col1 | Right-aligned Row1, Col2 |`  
+`| Center-aligned Row2, Col1 | Right-aligned Row2, Col2 |`  
+
+
+|  Center-aligned Header 1  |  Right-aligned Header 2  |
+| :--------: | ---------: |
+| Center-aligned Row1, Col1 | Right-aligned Row1, Col2 |
+| Center-aligned Row2, Col1 | Right-aligned Row2, Col2 |
+
+
+
+<hr>
+#### LaTeX Equations
+
+**Markdown:** `$$x_{1,2} = {-b\pm\sqrt{b^2 - 4ac} \over 2a}.$$`
+
+$$x_{1,2} = {-b\pm\sqrt{b^2 - 4ac} \over 2a}$$
+
+**Markdown:** `$$ P(A \mid B) = \frac{P(B \mid A) \, P(A)}{P(B)} $$`
+
+$$ P(A \mid B) = \frac{P(B \mid A) \, P(A)}{P(B)} $$
+
+<hr>
+#### Images
+
+**Markdown:** `![](./img/bls_emblem.png)`  
+**HTML:** `<img src="./img/bls_emblem.png">`
+
+![](./img/bls_emblem.png)
+
+<hr>
+#### Line Breaks
 
 - Simple line breaks can be somewhat confusing in R Markdown. In order to to create a line break, you have to **end a line with two spaces.**  
 
@@ -205,29 +304,71 @@ You can also use HTML
 
 For example:
 
-Here are two lines with no space at the end with no space at the end of the first.
+Here are two lines separated by a hard return but no spaces at the end of the first sentence.
 They end up becoming one line.
     
 You must include two spaces.  
 This will separate your lines.
 
 <hr>
-Code Chunks
-========================================================
 
-Code chunks are where the magic happens in R Markdown. The code you enter gets executed and the results are shown in the document.  
+<blockquote style="border-left:6px solid green;background-image: linear-gradient(to right, lightgreen , white);">
+**Exercise:** Copy and paste the unformatted text below into the R Markdown document you created earlier, then add markdown formatting to it so that it looks like the text in the final formatted text section.
+
+~~~
+Fisher's Iris Data  
+by [ENTER YOUR NAME]
+
+The famous Fisher iris data set gives the measurements in centimeters of the variables sepal length and width and petal length and width, respectively, for 50 flowers from each of 3 species of iris. The species are Iris setosa, versicolor, and virginica.
+
+iris is a data frame with 150 cases (rows) and 5 variables (columns) named:  
+Sepal.Length  
+Sepal.Width  
+Petal.Length  
+Petal.Width  
+Species
+
+For more information about this data set, see Fisher's Iris Data Set on Wikipedia
+[USE THIS LINK]: https://en.wikipedia.org/wiki/Iris_flower_data_set
+~~~
+</blockquote>
+
+#### Final Formatted Text
+
+#### Fisher's Iris Data
+###### by Brandon Kopp
+
+The famous **Fisher iris data set** gives the measurements in centimeters of the variables sepal length and width and petal length and width, respectively, for 50 flowers from each of 3 species of iris. The species are Iris *setosa*, *versicolor*, and *virginica*.
+
+`iris` is a data frame with `r nrow(iris)` cases (rows) and `r ncol(iris)` variables (columns) named: 
+
+1. Sepal.Length
+2. Sepal.Width
+3. Petal.Length
+4. Petal.Width
+5. Species
+
+For more information about this data set, see [Fisher's Iris Data Set on Wikipedia](https://en.wikipedia.org/wiki/Iris_flower_data_set).
+
+<br> 
+
+### Code Chunks 
+
+<hr style="border:.75px solid black; margin-top:0px">
+
+Code chunks are where the magic happens in R Markdown. Code chunks can contain any code that you would would use in R. The code you enter gets executed and the results are shown in the document. 
 
 The syntax for code chunks looks like this:
 
 ~~~~~
-' ' ' {r}  
+'''{r}  
   SOME CODE GOES HERE  
-' ' '
+'''
 ~~~~~
 
-**NOTE:** ' &nbsp; is a backtick, not a single quote or apostrophe
+**NOTE:** `'` is a backtick, *not* a single quote or apostrophe.
 
-Let's start with something simple; assigning values to variables and doing a mathematical operation
+Let's start with something simple; assigning values to variables and doing a mathematical operation. The box below is an example of how a code chunk appears in a document. By default, you will see the grey box with code highlighting. You will not see the code chunk options.
 
 ```{r}
 x <- 7
@@ -235,36 +376,55 @@ y <- 6
 x * y
 ```
 
-Once those values are assigned, we can use them in later code chunks
+Once those values are assigned, we can use them in later code chunks.
 
 ```{r}
+x + y
+sum(c(x, y))
+round(x/y, 2)
 x > y
 ```
 
-<hr>
-### Using Code Chunks To Make Tables
+You can run code chunks individually within R Studio or execute the code line-by-line as you would in a normal document.
 
+**Three important points:**
+
+1. Code chunks are run in order so you need to keep straight what variables need to be created in which order. This seems obvious, but can be problematic if you run code line-by-line and have variables loaded in the global environment.
+2. You don't have to knit the document in order to see the output of the code chunks. You can run the code chunks individually.
+3. You shouldn't have any issues with setting a working directory. When running individual lines within an R Markdown document or when you knit a document, it treats the Rmd file's directory as the working directory and you can use relative paths from there.
+
+<hr>
+<br>
+
+#### Using Code Chunks To Make Tables
 
 We can use the code chunks to print tables
 
 ```{r}
-mycars <- mtcars[1:2,1:6]
+mycars <- mtcars[1:5,1:6]
 mycars
 ```
 
-We can also use one of the many R packages to make nicer tables
+We can also output more nicely formatted tables using `knitr`. There are *many* other packages that offer different formatting options (e.g., `xtable`).  
 
 ```{r results='asis'}
-options(xtable.comment = FALSE)
-print(xtable::xtable(mycars,caption = "Motor Trend Car Table"), type='html', html.table.attributes="border=2")
+knitr::kable(mycars,caption = "Motor Trend Car Table")
+```
+
+You can also add interactive elements into HTML documents.
+
+```{r}
+  DT::datatable(mycars)
 ```
 
 <hr>
-### Using Code Chunks To Make Figures
+<br>
+
+#### Using Code Chunks To Make Figures
 
 We can also use code chunks to print figures
 
-```{r cars, fig.width=6, fig.height=4, dpi=100}
+```{r cars, fig.width=6, fig.height=4, dpi=100, warning=F, message=F}
 library(ggplot2)
 gg <- ggplot(mtcars, aes(hp, mpg)) +
         geom_point(aes(color=as.factor(cyl)), size=5) +
@@ -275,28 +435,47 @@ gg <- ggplot(mtcars, aes(hp, mpg)) +
 gg
 ```
 
+You can also make interactive graphics in HTML documents.
+
+```{r}
+  plotly::ggplotly(gg)
+```
+
 <hr>
-###Code Chunk Options
+<br>
+
+#### Code Chunk Options
 
 Code chunks accept optional arguments
 
 ~~~~~
-' ' ' {r name, eval=FALSE, warning=FALSE, message=FALSE}  
-  SOME CODE GOES HERE  
-' ' '
+'''{r name, eval=FALSE, warning=FALSE, message=FALSE}  
+  # SOME CODE GOES HERE  
+'''
+~~~~~
+
+- **name** - This is not necessary, but it is good practice to label your code chunks. Two figures cannot have the same name
+- **echo** - Whether to display the code chunk or just show the results. If you want the code embedded in your document but don't want the reader of the document to see it, you can set echo=FALSE (Default: `echo=True`)
+- **eval** - Whether to run the code in the code chunk. 'eval=FALSE' can be used if you want to display the code but not have it run (Default: `eval=TRUE`)
+- **warning** - Whether to display warning messages in the document (Default: `warning=TRUE`)
+- **message** - Whether to display code messages in the document (Default: `message=TRUE`)
+- **results** - Whether and how to display the computation of the results
+- **cache** - Saves output of the code chunk for use when you run the R Markdown file the next time (within the same session). This is useful if you have a code chunk that takes a long time to run. (Default: `cache=FALSE`)
+
+In your first code chunk, you can set your own defaults.
+
+~~~~~
+'''{r include=FALSE}  
+knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE)
+'''
 ~~~~~
 
 <hr>
-- **name** - This is not necessary, but it is good practice to label your code chunks. Two figures cannot have the same name.
-- **echo** - Whether to display the code chunk or just show the results. If you want the code embedded in your document but don't want the reader of the document to see it, you can set echo=FALSE
-- **eval** - Whether to run the code in the code chunk. This can be used if you want to display the code but not have it run.
-- **warning** - Whether to display warning messages in the document.
-- **message** - Whether to display code messages in the document.
-- **results** - Whether and how to display the computation of the results.
+<br>
 
-**NOTE:** The default for echo, eval, warning, and message is TRUE.
- 
-Here is a code chunk with `warning = TRUE` and `message = TRUE`:
+#### Code Chunk Examples
+
+Here is a code chunk with `warning = TRUE` and `message = TRUE` (i.e., the defaults for code chunks):
 
 ```{r warning=TRUE, message=TRUE}
 library(dplyr)
@@ -310,6 +489,12 @@ And with `warning = FALSE` and `message = FALSE`:
 library(dplyr)
 ```
 
+<hr>
+<br> 
+
+<blockquote style="border-left:6px solid green;background-image: linear-gradient(to right, lightgreen , white);">
+**Hands-on:** Create a new code chunk and use it to load the `dplyr` and `ggplot2` libraries. Knit the document with and without `warning=FALSE` and `message=FALSE`.
+</blockquote>
 
 Here is a code chunk with `echo = TRUE`:
 
@@ -340,19 +525,41 @@ n
 ```
 
 <hr>
-### Code Chunk Figure Options
+<blockquote style="border-left:6px solid green;background-image: linear-gradient(to right, lightgreen , white);">
+**Hands-on:** Create a new code chunk and use it to perform a calculation that will be used later.
+
+~~~
+iris_df <- iris %>%
+  mutate(sepal_area = Sepal.Length * Sepal.Width,
+         petal_area = Petal.Length * Petal.Width)
+~~~
+</blockquote>
+
+
+<blockquote style="border-left:6px solid green;background-image: linear-gradient(to right, lightgreen , white);">
+**Hands-on:** Create a new code chunk and use it to output a table of the first few lines of the newly transformed data set.
+
+~~~
+knitr::kable(head(iris_df))
+~~~
+</blockquote>
+
+<br>
+
+#### Code Chunk Figure Options
 
 There are a whole set of optional arguments just for displaying figures
 
 ~~~~~
-' ' ' {r name, fig.height=6, fig.width=4, dpi=300, fig.align='center'}  
+'''{r name, fig.height=6, fig.width=4, dpi=300, fig.align='center'}  
   SOME CODE GOES HERE  
-' ' '
+'''
 ~~~~~
 
 - **fig.height, fig.width** - Specify the height and width of the figure to make it fit into the space you have available.
 - **dpi** - Specifies the pixels per inch. This effectively controls the size of the objects (text, lines, etc.) in your figure. Too low and your figure can look pixelated.
 - **fig.align** - Specify whether your figure appears right, left, or center aligned.
+- **fig.cap** - Enter text that will be included underneath your plot as a caption.
 
 The plot from earlier with `fig.height=6`, `fig.width=9`, `dpi=75`, and `fig.align='center'`.
 
@@ -360,15 +567,28 @@ The plot from earlier with `fig.height=6`, `fig.width=9`, `dpi=75`, and `fig.ali
 gg
 ```
 
-The same plot with `fig.height=4`, `fig.width=6`, `dpi=300`, and `fig.align='right'`. 
+Below is the same plot with `fig.height=6`, `fig.width=9`, `dpi=300`, and `fig.align='center'`. Notice, the only thing I changed was the `dpi`. See how that affects the size of plot, the fonts, the points, etc. You can play around with `fig.height`, `fig.width`, and `dpi` until you find a combination that suits your preferences.
 
-```{r plot2, fig.height=4,fig.width=6,dpi=300,fig.align='right', echo=FALSE}
+```{r plot2, fig.height=6,fig.width=9,dpi=300, fig.align='center', echo=FALSE}
 gg
 ```
 
 <hr>
-Inline Code
-========================================================
+<br> 
+
+<blockquote style="border-left:6px solid green;background-image: linear-gradient(to right, lightgreen , white);">
+**Hands-on:** Create a new code chunk and use it to output a scatterplot that displays the Sepal Area and Petal Area variables calculated earlier.
+
+~~~
+ggplot(iris_df, aes(sepal_area, petal_area)) +
+  geom_point(aes(color=Species), alpha=0.5, size=2) +
+  labs(x="Sepal Area (in sq cm)", y="Petal Area (in sq cm)") +
+  theme_bw()
+~~~
+</blockquote>
+
+
+### Inline Code 
 
 Inline code allows you to create dynamic fills in your documents that update as the data are updated.  If you have values that could potentially change when you add new data or make changes, you should consider inline code. Some examples:
 
@@ -392,7 +612,7 @@ thismon <- 4.9
 tmon <- "June"
 ```
 
-And the inline code:  
+And then type the inline code:  
 
 - The unemployment rate in **'r tmon'** was **'r paste0(thismon, "%")'**, <b>'r ifelse(thismon < lastmon, paste0(" down ",paste0(abs(thismon-lastmon), "% from ")) ,ifelse(thismon > lastmon, paste0(" up ",paste0(abs(thismon-lastmon), "% from ")), " unchanged from "))'</b> **'r paste0(lastmon, "%")'** in **'r lmon'**
 <br>
@@ -402,26 +622,66 @@ And it would look like this:
 - The unemployment rate in `r tmon` was `r paste0(thismon, "%")`, `r ifelse(thismon < lastmon, paste0(" down ",paste0(abs(thismon-lastmon), "% from ")) ,ifelse(thismon > lastmon, paste0(" up ",paste0(abs(thismon-lastmon), "% from ")), " unchanged from "))` `r paste0(lastmon, "%")` in `r lmon`.
 
 <hr>
-Output To
-========================================================
+<br>
+
+<blockquote style="border-left:6px solid green;background-image: linear-gradient(to right, lightgreen , white);">
+**Exercise:** Update the sentence below from the earlier text formatting exercise. Replace '150' and '5' with inline code calculations. **Hint:** Calculate the number of rows and number of columns respectively.
+
+~~~
+iris is a data frame with 150 cases (rows) and 5 variables (columns) named:  
+~~~
+</blockquote>
+
+
+## Output
+
+<hr style="border:.75px solid black; margin-top:0px">
 
 When you are ready, you can "knit" the document to some format. HTML is available right away, but you need to install a LaTeX package in order to knit to PDF or Word. Other options are available (e.g., kindle) if you download other packages.
 
 <img src="img/Output.png" height=450; style="background-color:transparent; border:0px; box-shadow:none;">
 
-<hr>
-Additional Resources
-========================================================
+<blockquote style="border-left:6px solid green;background-image: linear-gradient(to right, lightgreen , white);">
+**Hands-on:** Practice knitting your document to different formats. **NOTE:** You may not be able to output to PDF or Word if you did not install MikTex or some other LaTeX software.
+</blockquote>
+
+<br>
+
+## Miscellaneous Information
+
+<hr style="border:.75px solid black; margin-top:0px">
+
+- You don't have to write all of your code into the R Markdown document. If you have custom functions, for example, you can write those in a `.R` file and then run `source('functions_file.R')` in one of your early code chunks
+- Similarly, you can use the source file to import your libraries
+- You can use R Markdown documents to show bad, even non-functional, code. Just be sure to add `eval=FALSE` to the code chunk options so it doesn't run.
+- When you knit to HTML, you end up with a single HTML file. Your images get converted to some code gibberish. This can be changed by adding `self_contained: false` to the YAML file under `html_document`.
+
+~~~
+---
+output:
+  html_document:
+    self_contained: false
+---
+~~~
+
+
+## Additional Resources
+
+<hr style="border:.75px solid black; margin-top:0px">
 
 These websites can help fill in some of the gaps left by this document.
 
 - [R Markdown by RStudio](http://rmarkdown.rstudio.com/) 
+- [R Markdown for Data Science](https://r4ds.had.co.nz/r-markdown.html)
+- [R Markdown Definitive Guide](https://bookdown.org/yihui/rmarkdown/)
 - [Reproducible Reserach Class on Coursera](https://www.coursera.org/learn/reproducible-research)
-- [R Markdown Cheat Sheet (PDF)](https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf)
-- [R Markdown Reference Guide (PDF)](https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf)
+- [R Markdown Cheat Sheet (PDF)](https://github.com/rstudio/cheatsheets/raw/master/rmarkdown-2.0.pdf)
 
-<hr> 
-Conclusion
-========================================================
 <hr>
-If you have any questions, you can contact me at <brandon@brandonkopp.com>.
+<br>
+
+## Questions & Comments
+
+<hr style="border:.75px solid black; margin-top:0px">
+
+If you have any questions or comments, you can contact me at <kopp.brandon@bls.gov>.

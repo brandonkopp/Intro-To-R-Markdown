@@ -1,0 +1,81 @@
+---
+title: "Using the geofacet Package to Plot JOLTS Experimental State Estimates"
+author: "Brandon Kopp"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning = FALSE)
+```
+
+## Load Data
+
+We first download the data directly from [bls.gov](https://www.bls.gov/jlt/jlt_statedata.htm) using the `httr` package using the `GET()` function and load the result into file in a temporary directory. That temporary file is then loaded into R using the `read_excel()` function from the `readxl` package.  Finally, the time variable in the dataset (i.e., PERIOD) is presented as a combination of the year and month (e.g., 200102 for February, 2001).  In order to use this variable as a date, we append a day (the first of the month) and convert the result to a date.
+
+```{r load_data}
+library(readxl)
+library(httr)
+GET("https://www.bls.gov/jlt/jlt_statedata_2018.xlsx", write_disk(tf <- tempfile(fileext = ".xlsx")))
+jolts <- read_excel(tf,skip=2)
+jolts$date <- as.Date(paste0(jolts$PERIOD,"01"), format="%Y%m%d")
+```
+
+
+## Display Table
+
+We can then display the table to see what data are available. Using the `kable()` function in the `knitr` package, we can view a simple, HTML version of the table. Only the first five rows are displayed and to fit it on the screen width-wise, we can round the decimal values.
+
+In the table we can see that there are state abbreviations and FIPS codes. There are also values and rates for job openings (JO and JOR), hires (H and HR), quits (Q and QR), layoffs and discharges (LD and LDR), and total separations (TS and TSR).
+
+```{r display_table}
+knitr::kable(head(jolts,5),digits = 2)
+```
+
+We can also display the date range.  It appears we have monthly data for all dates between `r as.character(min(jolts$PERIOD))` and `r as.character(max(jolts$PERIOD))`.
+
+```{r display_date_range}
+print(paste("Date Range:", min(jolts$PERIOD), "-", max(jolts$PERIOD)))
+```
+
+## Create Plot
+
+We can plot the data as-is with no further transformation. In this case, we want to look at a time series of one of the variables. We also want to make use of the fact that we have state-level data. This looks like a good use of the `geofacet` package which allows us to plot separate time series for each state in a roughly U.S. shaped grid of plots.  
+
+Through some trial and error, we can see that plotting the actual values (e.g., job openings) is difficult to see because some states like California have far more job openings overall which squash the graphs for smaller states.  So we will plot one of the rate variables; job openings rate.  
+
+In the plot below, we will plot an area chart, `geom_area()`, for each state with a line, `geom_line()`, to top off the shaded area to make the rate easier to follow. We'll also add bands, `geom_rect()`, for recessions to see how economic downturns affected job openings. Finally, we'll add descriptive titles, subtitles, and captions (`labs()`) and do some formatting.
+
+```{r make_plot, fig.height=8, fig.width=12}
+library(geofacet)
+library(ggplot2)
+
+ggplot(data=jolts, aes(x=date, y=JOR, group=ST)) +
+  # Add bands for recessions in 2001 and 2007-2009
+  geom_rect(aes(xmin=as.Date("2001-03-01"), xmax=as.Date("2001-11-01"), ymin=-Inf, ymax=+Inf), 
+            fill='pink', alpha=0.05) +
+  geom_rect(aes(xmin=as.Date("2007-12-01"), xmax=as.Date("2009-06-01"), ymin=-Inf, ymax=+Inf), 
+            fill='pink', alpha=0.05) +
+  geom_line(size=0.25) +
+  geom_area(fill="grey40", alpha=0.5)  +
+  facet_geo(~ST, grid="us_state_grid1") +
+  labs(x="",y="",title="Job Opening Rate by State",
+       subtitle = "JOLTS Experimental State Estimates February 2001 - December 2018",
+       caption = paste0("Source: U.S. Bureau of Labor Statistics","\n",
+                        "Pink bars denote recession periods defined by the National Bureau of Economic Research")) +
+  scale_y_continuous(expand = c(0,0)) +
+  scale_x_date(expand=c(0,0)) +
+  theme_bw() +
+  theme(plot.title=element_text(face="bold",size=20),
+        legend.position="top",
+        plot.subtitle=element_text(face="italic",size=13),
+        plot.caption=element_text(face="italic",size=9),
+        axis.text=element_text(size=7)) 
+```
+
+## Conclusions
+
+The plot above shows us a couple interesting things.
+
+1. Some states were more severely affected by the recession in 2007-2009.
+2. Most, but not all, states are at their highest rate of job openings at the end of 2018.
+3. There are some states with highly seasonal variation in the job opening rates (e.g., Alaska, Wyoming, and Montana) compared to states with less variability (e.g., New York, Maryland, Louisiana).
